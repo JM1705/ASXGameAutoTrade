@@ -9,9 +9,18 @@ import json
 class AsxGameApi:
         
 
+    def customPrint(self, string):
+        print('[AsxGameApi] '+str(string))
+        
     def __init__(self, unm, pwd):
-        f = json.load(open('apiCfg.json', "r"))
-        self.driver = webdriver.Chrome(service=Service(f['driverLoc'])) 
+        try:
+            f = json.load(open('apiCfg.json', "r"))
+            driverLoc = f['driverLoc']
+            self.customPrint('loaded cfg file')
+        except:
+            driverLoc = 'C:/Users/junmu/Random Installs/chromedriver_win32/chromedriver.exe'
+            self.customPrint('Could not load cfg file, defaults loaded')
+        self.driver = webdriver.Chrome(service=Service(driverLoc)) 
         self.driver.get("https://game.asx.com.au/game/student/school/2022-1/login")
         foundLogin = False
         while not foundLogin:
@@ -25,13 +34,13 @@ class AsxGameApi:
             self.driver.find_element(By.ID, 'studentLoginForm:j_idt369').send_keys(Keys.ENTER)
         except:
             self.driver.find_element(By.ID, 'studentLoginForm:j_idt370').send_keys(Keys.ENTER)
-        print('logged in')
+        self.customPrint('logged in')
     
     
     def BuyStock(self, stock, amount, orderType, limitPrice):
         self.driver.get("https://game.asx.com.au/game/play/school/2022-1/orders/add")
         self.driver.find_element(By.XPATH, '//*[@id="buyside"]/div[2]').click()
-        print('clicked buy button')    
+        self.customPrint('clicked buy button')    
         
         stockDropDown = Select(self.driver.find_element(By.XPATH, '//*[@id="asxCode"]'))
         stockOptions = stockDropDown.options
@@ -41,7 +50,7 @@ class AsxGameApi:
                 stockIndex = i
         stockDropDown.select_by_index(stockIndex)
         self.driver.find_element(By.ID, 'volume').send_keys(amount)
-        print('Selected stock')    
+        self.customPrint('Selected stock')    
         
         if orderType == 'marketLimit':
             self.driver.find_element(By.XPATH, '//*[@id="market_limit"]/div[2]').click()
@@ -49,23 +58,23 @@ class AsxGameApi:
             self.driver.find_element(By.XPATH, '//*[@id="limit_order"]/div[2]').click()
             time.sleep(0.1)
             self.driver.find_element(By.ID, 'price').send_keys(limitPrice)
-        print('Selected order type')
+        self.customPrint('Selected order type')
         
         self.driver.find_element(By.ID, 'submitBtn').send_keys(Keys.ENTER)
         time.sleep(2)
         self.driver.get_screenshot_as_file('lastOrder.png')
-        print('Took screenshot as lastOrder.png')
+        self.customPrint('Took screenshot as lastOrder.png')
         try:
             self.driver.find_element(By.ID, 'saveBtn').click()
         except:
             raise Exception('Submitting order failed, there are probably pending orders for the same stock')
-        print('Sent order')
+        self.customPrint('Sent order')
         
         
     def SellStock(self, stock, amount, orderType, limitPrice):
         self.driver.get("https://game.asx.com.au/game/play/school/2022-1/orders/add")
         self.driver.find_element(By.XPATH, '//*[@id="sellside"]/div[2]').click()
-        print('clicked sell button')    
+        self.customPrint('clicked sell button')    
         
         stockDropDown = Select(self.driver.find_element(By.XPATH, '//*[@id="sellAsxCode"]'))
         stockOptions = stockDropDown.options
@@ -75,7 +84,7 @@ class AsxGameApi:
                 stockIndex = i
         stockDropDown.select_by_index(stockIndex)
         self.driver.find_element(By.ID, 'volume').send_keys(amount)
-        print('Selected stock')    
+        self.customPrint('Selected stock')    
         
         if orderType == 'marketLimit':
             self.driver.find_element(By.XPATH, '//*[@id="market_limit"]/div[2]').click()
@@ -83,18 +92,18 @@ class AsxGameApi:
             self.driver.find_element(By.XPATH, '//*[@id="limit_order"]/div[2]').click()
             time.sleep(0.1)
             self.driver.find_element(By.ID, 'price').send_keys(limitPrice)
-        print('Selected order type')
+        self.customPrint('Selected order type')
         
         self.driver.find_element(By.ID, 'submitBtn').send_keys(Keys.ENTER)
         time.sleep(2)
         self.driver.get_screenshot_as_file('lastOrder.png')
-        print('Took screenshot as lastOrder.png')
+        self.customPrint('Took screenshot as lastOrder.png')
         try:
             self.driver.find_element(By.ID, 'saveBtn').click()
         except:
             raise Exception('Submitting order failed, there are probably pending orders for the same stock')
         self.driver.find_element(By.ID, 'saveBtn').click()
-        print('Sent order')
+        self.customPrint('Sent order')
         
         
     def AccountDetails(self):
