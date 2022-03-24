@@ -4,12 +4,14 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.service import Service
 from selenium.webdriver.support.select import Select
+import json
 
 class AsxGameApi:
         
 
     def __init__(self, unm, pwd):
-        self.driver = webdriver.Chrome(service=Service("C:/Users/junmu/Random Installs/chromedriver_win32/chromedriver.exe")) 
+        f = json.load(open('apiCfg.json', "r"))
+        self.driver = webdriver.Chrome(service=Service(f['driverLoc'])) 
         self.driver.get("https://game.asx.com.au/game/student/school/2022-1/login")
         foundLogin = False
         while not foundLogin:
